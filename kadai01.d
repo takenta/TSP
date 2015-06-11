@@ -23,14 +23,14 @@ void main() {
         path.writeln;
         i++;
     }
-    i.writeln;
+    writeln("num route: ",i);
 }
 
 int[][] getPathList(int num_points, int[] route) {
     int[][] path_list = [];
 
     if (route.length >= num_points) {
-        return (path_list ~ (route ~ 0));
+        return [route ~ 0];
     }
 
     foreach(now_point; 0..num_points) {
