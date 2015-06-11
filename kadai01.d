@@ -3,15 +3,22 @@ import std.string;
 import std.algorithm;
 import std.conv;
 
-void main(char[][] args) {
+void main() {
     int[][] arc_info = [];
-    auto start_point = args[0].to!int;
+    auto start_point = 0;
 
     //Arc情報の読み込み
     foreach(input; stdin.byLine) {
-         arc_info ~= input.split(" ").map!(to!int);
+        int[] line;
+        foreach(num; input.split(" ")) {
+            line ~= num.to!int;
+        }
+        arc_info ~= line;
     }
 
     writeln("start_point: ", start_point);
-    writeln("arc_info: ", arc_info);
+    writeln("arc_info");
+    foreach(line; arc_info) {
+        line.writeln;
+    }
 }
