@@ -16,12 +16,6 @@ void main() {
         arc_info ~= line;
     }
 
-    writeln("start_point: ", start_point);
-    writeln("arc_info");
-    foreach(line; arc_info) {
-        line.writeln;
-    }
-
     auto path_list = getPath(arc_info, [], [], start_point, start_point);
     writeln("path_list:", path_list);
 }
