@@ -21,26 +21,29 @@ void main() {
         line.writeln;
     }
 
-    foreach(path; getPathList(arc_info, new Path(arc_info ,[start_point])).get()) {
+    PathList path_list = new PathList();
+    path_list = setPathAll(arc_info, new Path(arc_info ,start_point), 1);
+    foreach(path; path_list.get()) {
         writeln("path: ", path.getPath());
         writeln("cost: ", path.getCost());
     }
 }
 
-PathList getPathList(int[][] arc_info, Path route) {
-    PathList path_list = new PathList();
+public PathList setPathAll(int[][] arc_info, Path prev_route, int genelation) {
+    PathList buffer = new PathList();
     int num_points = arc_info.length;
 
-    if (route.length() >= num_points) {
-        return path_list.add(route.add(0));
+    assert(prev_route.length == genelation);
+
+    if (prev_route.length() >= num_points) {
+        return buffer.add(prev_route.add(0));
     }
 
     foreach(now_point; 0..num_points) {
-        if(!route.canFind(now_point)) {
-            path_list.join(getPathList(arc_info, new Path(route.add(now_point))));
+        if(!prev_route.canFind(now_point)) {
+            buffer.join(setPathAll(arc_info, prev_route.dup().add(now_point), genelation + 1));
         }
-        writeln("route: ", route.getPath());
     }
 
-    return path_list;
+    return buffer;
 }
