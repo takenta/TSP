@@ -2,6 +2,9 @@ import std.stdio;
 import std.string;
 import std.algorithm;
 import std.conv;
+import Path;
+import PathList;
+
 
 void main() {
     auto fin = File("arc_list.txt");
@@ -18,25 +21,25 @@ void main() {
         line.writeln;
     }
 
-    int i = 0;
-    foreach(path; getPathList(arc_info.length.to!int, [start_point])) {
-        path.writeln;
-        i++;
+    foreach(path; getPathList(arc_info, new Path(arc_info ,[start_point])).get()) {
+        writeln("path: ", path.getPath());
+        writeln("cost: ", path.getCost());
     }
-    writeln("num route: ",i);
 }
 
-int[][] getPathList(int num_points, int[] route) {
-    int[][] path_list = [];
+PathList getPathList(int[][] arc_info, Path route) {
+    PathList path_list = new PathList();
+    int num_points = arc_info.length;
 
-    if (route.length >= num_points) {
-        return [route ~ 0];
+    if (route.length() >= num_points) {
+        return path_list.add(route.add(0));
     }
 
     foreach(now_point; 0..num_points) {
-        if(!canFind(route, now_point)) {
-            path_list ~= getPathList(num_points, route ~ now_point);
+        if(!route.canFind(now_point)) {
+            path_list.join(getPathList(arc_info, new Path(route.add(now_point))));
         }
+        writeln("route: ", route.getPath());
     }
 
     return path_list;
