@@ -7,9 +7,15 @@ public class Path {
     private int[] path;
     private int cost;
 
-    this(in int[][] arc_info, int[] route) {
+    this(in int[][] arc_info) {
         this.arc_info = arc_info;
-        this.path = route;
+        this.path = [];
+        this.cost = 0;
+    }
+
+    this(in int[][] arc_info, int start_point) {
+        this.arc_info = arc_info;
+        this.path = [start_point];
         this.cost = 0;
     }
 
@@ -27,7 +33,7 @@ public class Path {
         auto prev_node = this.path.back;
         this.path ~= node;
         this.cost += arc_info[prev_node][node];
-        return new Path(this);
+        return this.dup();
     }
 
     public int[] getPath() {
@@ -44,5 +50,9 @@ public class Path {
 
     public int length() {
         return this.path.length;
+    }
+
+    public Path dup() {
+        return new Path(this);
     }
 }
