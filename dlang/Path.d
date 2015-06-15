@@ -1,6 +1,6 @@
 import std.array;
 import std.algorithm;
-import std.container;
+import std.container.array;
 
 public class Path {
     private const int[][] arc_info;
@@ -27,17 +27,19 @@ public class Path {
 
     /**
      * pathにnodeを追加する。また、追加に伴ってpathのcostも更新する。
+     * 式の中で使用するために自身の複製を返す。
      * @param node 追加するノード
+     * @return pathの複製
      */
     public Path add(int node) {
         auto prev_node = this.path.back;
         this.path ~= node;
         this.cost += arc_info[prev_node][node];
-        return this.dup();
+        return this.dup;
     }
 
-    public int[] getPath() {
-        return this.path;
+    public int[] get() {
+        return this.path.dup;
     }
 
     public int getCost() {
