@@ -1,4 +1,5 @@
 import std.array;
+import std.conv;
 import std.algorithm;
 import std.container.array;
 
@@ -51,7 +52,7 @@ public class Path {
     }
 
     public int length() {
-        return this.path.length;
+        return this.path.length.to!int;
     }
 
     public Path dup() {
