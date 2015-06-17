@@ -8,8 +8,8 @@ import PathList;
 
 void main() {
     int[][] arc_info = [];
-    auto start_point = 0;
-    auto fin = File("arc_list.txt");
+    int start_point = 0;
+    auto fin = File("arc_info_100.txt");
 
     // Arc情報の読み込み
     foreach(input; fin.byLine) {
@@ -18,26 +18,28 @@ void main() {
             line ~= num.to!int;
         }
         arc_info ~= line;
-        line.writeln;
+        //line.writeln;
     }
 
-    // path情報の生成
-    PathList path_list = new PathList();
-    path_list.setPathAll(arc_info, new Path(arc_info ,start_point));
+    PathList path_list = new PathList(start_point);
 
     writeln("==========");
 
     // 全てのpathの内容とコストを表示
-    Path min_cost;
-    foreach(path; path_list.getList) {
-        writeln("path: ", path.get);
-        writeln("cost: ", path.getCost);
+    path_list.setPathAll(arc_info);    // path情報の生成
+    auto sorted_list = path_list.getList.dup.sort!("a.getCost < b.getCost");
+    Path max_cost = null;
+    Path min_cost = null;
+    foreach(path; sorted_list) {
+        //writeln("path: ", path.get);
+        //writeln("cost: ", path.getCost);
+        if (max_cost is null || max_cost.getCost - path.getCost < 0)
+            max_cost = path;
+        if (min_cost is null || min_cost.getCost - path.getCost > 0)
+            min_cost = path;
     }
+    writeln("max_cost: ", max_cost.get, "(", max_cost.getCost, ")");
+    writeln("min_cost: ", min_cost.get, "(", min_cost.getCost, ")");
 
     writeln("==========");
-
-    // pathの総数とコストが最大・最小のpathを表示
-    writeln("num_path: ", path_list.length);
-    writeln("max_cost: ", path_list.getMaxCost.get, ",", path_list.getMaxCost.getCost);
-    writeln("min_cost: ", path_list.getMinCost.get, ",", path_list.getMinCost.getCost);
 }
