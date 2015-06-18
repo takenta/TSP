@@ -40,9 +40,16 @@ public class Path {
     }
 
     public Path insert(int before_node, int node) {
-        auto index = this.path.length - (this.path.find(before_node)).length + 1;
+        auto index = this.indexOf(before_node) + 1;
         this.path.insertInPlace(index, node);
         return this.dup;
+    }
+
+    public uint indexOf(int node) {
+        foreach (int i, int sample; this.path) {
+            if (node == sample) return i;
+        }
+        return this.path.length;
     }
 
     public int[] get() {
