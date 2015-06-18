@@ -24,11 +24,11 @@ void main() {
 
     // 全てのpathの内容とコストを表示
     path_list.setPathAll(arc_info);    // path情報の生成
-    auto sorted_list = path_list.getList.dup.sort!("a.getCost < b.getCost");
+    auto sorted_list = path_list.getList.sort!("a.getCost < b.getCost");
     Path optimal_path = null;
     foreach(path; sorted_list) {
-        writeln("path: ", path.get);
-        writeln("cost: ", path.getCost);
+        //writeln("path: ", path.get);
+        //writeln("cost: ", path.getCost);
         if (optimal_path is null || optimal_path.getCost - path.getCost > 0)
             optimal_path = path;
     }
