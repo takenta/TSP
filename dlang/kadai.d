@@ -34,4 +34,19 @@ void main() {
     }
     writeln("All Enumration method");
     writeln("optimal_path: ", optimal_path.get, "(", optimal_path.getCost, ")");
+
+    writeln("================");
+
+    path_list.setOptimalPath("BF", arc_info);
+    writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.getCost, ")");
+
+    writeln("================");
+
+    path_list.setOptimalPath("NA", arc_info);
+    writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.getCost, ")");
+
+    writeln("================");
+
+    path_list.setOptimalPath("NN", arc_info);
+    writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.getCost, ")");
 }

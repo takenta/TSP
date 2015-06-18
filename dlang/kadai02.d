@@ -22,12 +22,7 @@ void main() {
 
     PathList path_list = new PathList(start_point);
 
-    writeln("==========");
-
     // pathのコストが最大・最小のpathを表示
-    path_list.setMaxMinPath(arc_info, new Path(arc_info ,start_point));
-    writeln("max_cost: ", path_list.getMaxCost.get, "(", path_list.getMaxCost.getCost, ")");
-    writeln("min_cost: ", path_list.getMinCost.get, "(", path_list.getMinCost.getCost, ")");
-
-    writeln("==========");
+    path_list.setOptimalPath("BF", arc_info);
+    writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.getCost, ")");
 }
