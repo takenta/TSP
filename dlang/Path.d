@@ -1,5 +1,6 @@
-import std.array;
+import std.stdio;
 import std.conv;
+import std.array;
 import std.algorithm;
 import std.container.array;
 
@@ -35,7 +36,12 @@ public class Path {
     public Path add(int node) {
         auto prev_node = this.path.back;
         this.path ~= node;
-        this.cost += arc_info[prev_node][node];
+        return this.dup;
+    }
+
+    public Path insert(int before_node, int node) {
+        auto index = this.path.length - (this.path.find(before_node)).length + 1;
+        this.path.insertInPlace(index, node);
         return this.dup;
     }
 
@@ -44,7 +50,7 @@ public class Path {
     }
 
     public int getCost() {
-        return this.cost;
+        return this.calc(this.arc_info, this.path, 0);
     }
 
     public bool canFind(int node) {
@@ -57,5 +63,14 @@ public class Path {
 
     public Path dup() {
         return new Path(this);
+    }
+
+    public int calc(in int[][] arc_info, in int[] path, in int cost) {
+        int[] cloned_path = path.dup;
+
+        if (cloned_path.length <= 1) return cost;
+
+        int arc_cost = arc_info[cloned_path[0]][cloned_path[1]];
+        return cost + this.calc(arc_info, cloned_path.remove(0), arc_cost);
     }
 }
