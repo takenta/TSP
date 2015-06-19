@@ -6,17 +6,18 @@ import Path;
 import PathList;
 
 
-void main() {
+void main(string[] args) {
     int[][] arc_info = [];
     int start_point = 0;
-    auto fin = File("arc_info_10.txt");
+    auto input_file = args[1];
+    auto fin = File(input_file);
 
     // Arc情報の読み込み
     foreach(input; fin.byLine) {
         int[] line;
-        foreach(num; input.split(" ")) {
+        input.split(" ").each!((num){
             line ~= num.to!int;
-        }
+        });
         arc_info ~= line;
     }
 

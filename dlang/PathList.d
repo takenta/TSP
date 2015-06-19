@@ -124,10 +124,10 @@ public class PathList {
     public void byAllEnumerate(int[][] arc_info, Path prev_path) {
         this.setPathAll(arc_info);
         this.sort;
-        foreach(path; this.path_list) {
+        this.path_list.each!((path){
             if (this.optimal_path is null || this.optimal_path.getCost - path.getCost > 0)
                 this.optimal_path = path;
-        }
+        });
     }
 
     /**
@@ -145,7 +145,7 @@ public class PathList {
             return; // 探索打ち切り
         }
 
-        foreach(now_node; 0..num_node) {
+        foreach (now_node; 0..num_node) {
             if(prev_path.canFind(now_node)) continue;
 
             this.byBruteForce(arc_info, prev_path.dup.add(now_node));
