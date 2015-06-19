@@ -2,6 +2,7 @@ import std.stdio;
 import std.array;
 import std.conv;
 import std.container.array;
+import std.algorithm.sorting;
 import std.algorithm.searching;
 import std.algorithm.iteration;
 import Path;
@@ -44,6 +45,11 @@ public class PathList {
         return this.optimal_path.dup;
     }
 
+    public Path[] sort() {
+        this.path_list.sort!("a.getCost < b.getCost");
+        return this.path_list.dup;
+    }
+
     public PathList dup() {
         return new PathList(this);
     }
@@ -84,6 +90,10 @@ public class PathList {
 
     public void setOptimalPath(string method, int[][] arc_info) {
         switch (method) {
+            case "AE":
+                writeln("All Enumration method");
+                this.byAllEnumerate(arc_info, new Path(arc_info, this.start_point));
+                break;
             case "BF":
                 writeln("Brute Force method");
                 this.byBruteForce(arc_info, new Path(arc_info, this.start_point));
@@ -102,11 +112,26 @@ public class PathList {
                 break;
             default:
                 writeln("It's not exists.");
+
         }
     }
 
     /**
-     * 順次生成・比較法によってコストが最大・最小のpathを発見し、フィールドに代入する。
+     * 完全列挙法によってコストが最小のpathを発見し、フィールドに代入する。
+     * @param arc_info arcの情報
+     * @param prev_path 現状のpath
+     */
+    public void byAllEnumerate(int[][] arc_info, Path prev_path) {
+        this.setPathAll(arc_info);
+        this.sort;
+        foreach(path; this.path_list) {
+            if (this.optimal_path is null || this.optimal_path.getCost - path.getCost > 0)
+                this.optimal_path = path;
+        }
+    }
+
+    /**
+     * 順次生成・比較法によってコストが最小のpathを発見し、フィールドに代入する。
      * @param arc_info arcの情報
      * @param prev_path 現状のpath
      */
@@ -128,7 +153,7 @@ public class PathList {
     }
 
     /**
-     * Nearest Addtion法によってコストが最大・最小のpathを発見し、フィールドに代入する。
+     * Nearest Addtion法によってコストが最小のpathを発見し、フィールドに代入する。
      * @param arc_info arcの情報
      * @param prev_path 現状のpath
      */
@@ -163,7 +188,7 @@ public class PathList {
     }
 
     /**
-     * Greedy法によってコストが最大・最小のpathを発見し、フィールドに代入する。
+     * Greedy法によってコストが最小のpathを発見し、フィールドに代入する。
      * @param arc_info arcの情報
      * @param prev_path 現状のpath
      */
@@ -172,7 +197,7 @@ public class PathList {
     }
 
     /**
-     * Nearest Neighbor法によってコストが最大・最小のpathを発見し、フィールドに代入する。
+     * Nearest Neighbor法によってコストが最小のpathを発見し、フィールドに代入する。
      * @param arc_info arcの情報
      * @param prev_path 現状のpath
      */

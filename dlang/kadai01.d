@@ -23,15 +23,6 @@ void main() {
     PathList path_list = new PathList(start_point);
 
     // 全てのpathの内容とコストを表示
-    path_list.setPathAll(arc_info);    // path情報の生成
-    auto sorted_list = path_list.getList.sort!("a.getCost < b.getCost");
-    Path optimal_path = null;
-    foreach(path; sorted_list) {
-        //writeln("path: ", path.get);
-        //writeln("cost: ", path.getCost);
-        if (optimal_path is null || optimal_path.getCost - path.getCost > 0)
-            optimal_path = path;
-    }
-    writeln("All Enumration method");
-    writeln("optimal_path: ", optimal_path.get, "(", optimal_path.getCost, ")");
+    path_list.setOptimalPath("AE", arc_info);
+    writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.getCost, ")");
 }
