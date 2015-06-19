@@ -6,7 +6,7 @@ import Path;
 import PathList;
 
 
-void main() {
+void main(string[] args) {
     int[][] arc_info = [];
     int start_point = 0;
     auto input_file = args[1];
@@ -19,13 +19,14 @@ void main() {
             line ~= num.to!int;
         });
         arc_info ~= line;
+        line.writeln;
     }
 
-    PathList path_list = new PathList(start_point);
+    PathList path_list = new PathList(arc_info, start_point);
 
     foreach (method; ["AE", "BF", "NA", "NN"]) {
         writeln("================");
-        path_list.setOptimalPath(method, arc_info);
+        path_list.setOptimalPath(method);
         writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.getCost, ")");
     }
 }

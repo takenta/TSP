@@ -8,17 +8,20 @@ import std.algorithm.iteration;
 import Path;
 
 public class PathList {
+    private const int[][] arc_info;
     private const int start_point;
     private Path[] path_list;
     private Path optimal_path;
 
-    this(in int start_point) {
+    this(in int[][] arc_info, in int start_point) {
+        this.arc_info = arc_info;
         this.start_point = start_point;
         this.path_list = [];
         this.optimal_path = null;
     }
 
     this(PathList path_list) {
+        this.arc_info = path_list.arc_info.dup;
         this.start_point = path_list.getStartPoint;
         this.path_list = path_list.getList;
         this.optimal_path = path_list.optimal_path;
@@ -59,8 +62,8 @@ public class PathList {
      * @param arc_info arcの情報
      * @param path
      */
-    public void setPathAll(int[][] arc_info) {
-        this.path_list = this.generatePathAll(arc_info, new Path(arc_info, this.start_point));
+    public void setPathAll() {
+        this.path_list = this.generatePathAll(new Path(this.arc_info, this.start_point));
     }
 
     /**
@@ -68,9 +71,9 @@ public class PathList {
      * @param arc_info arcの情報
      * @param prev_path 現状のpath
      */
-    private Path[] generatePathAll(int[][] arc_info, Path prev_path) {
+    private Path[] generatePathAll(Path prev_path) {
         Path[] buffer = [];
-        int num_node = arc_info.length.to!int;
+        int num_node = this.arc_info.length.to!int;
 
         if (prev_path.length() >= num_node) {
             prev_path.add(prev_path.get.front);
@@ -81,34 +84,34 @@ public class PathList {
 
         foreach(now_node; 0..num_node) {
             if(!prev_path.canFind(now_node)) {
-                buffer ~= generatePathAll(arc_info, prev_path.dup().add(now_node));
+                buffer ~= generatePathAll(prev_path.dup().add(now_node));
             }
         }
 
         return buffer;
     }
 
-    public void setOptimalPath(string method, int[][] arc_info) {
+    public void setOptimalPath(string method) {
         switch (method) {
             case "AE":
                 writeln("All Enumration method");
-                this.byAllEnumerate(arc_info, new Path(arc_info, this.start_point));
+                this.byAllEnumerate(new Path(this.arc_info, this.start_point));
                 break;
             case "BF":
                 writeln("Brute Force method");
-                this.byBruteForce(arc_info, new Path(arc_info, this.start_point));
+                this.byBruteForce(new Path(this.arc_info, this.start_point));
                 break;
             case "NA":
                 writeln("Nearest Addtion method");
-                this.byNearestAddition(arc_info, new Path(arc_info, this.start_point));
+                this.byNearestAddition(new Path(this.arc_info, this.start_point));
                 break;
             case "G":
                 writeln("Greedy method");
-                this.byGreedy(arc_info, new Path(arc_info, this.start_point));
+                this.byGreedy(new Path(this.arc_info, this.start_point));
                 break;
             case "NN":
                 writeln("Nearest Neighbor method");
-                this.byNearestNeighbor(arc_info, new Path(arc_info, this.start_point));
+                this.byNearestNeighbor(new Path(this.arc_info, this.start_point));
                 break;
             default:
                 writeln("It's not exists.");
@@ -121,8 +124,8 @@ public class PathList {
      * @param arc_info arcの情報
      * @param prev_path 現状のpath
      */
-    public void byAllEnumerate(int[][] arc_info, Path prev_path) {
-        this.setPathAll(arc_info);
+    public void byAllEnumerate(Path prev_path) {
+        this.setPathAll();
         this.sort;
         this.path_list.each!((path){
             if (this.optimal_path is null || this.optimal_path.getCost - path.getCost > 0)
@@ -135,8 +138,8 @@ public class PathList {
      * @param arc_info arcの情報
      * @param prev_path 現状のpath
      */
-    public void byBruteForce(int[][] arc_info, Path prev_path) {
-        int num_node = arc_info.length.to!int;
+    public void byBruteForce(Path prev_path) {
+        int num_node = this.arc_info.length.to!int;
 
         if (prev_path.length() >= num_node) {
             prev_path.add(prev_path.get.front);
@@ -148,7 +151,7 @@ public class PathList {
         foreach (now_node; 0..num_node) {
             if(prev_path.canFind(now_node)) continue;
 
-            this.byBruteForce(arc_info, prev_path.dup.add(now_node));
+            this.byBruteForce(prev_path.dup.add(now_node));
         }
     }
 
@@ -157,8 +160,8 @@ public class PathList {
      * @param arc_info arcの情報
      * @param prev_path 現状のpath
      */
-    public void byNearestAddition(in int[][] arc_info, Path prev_path) {
-        int num_node = arc_info.length.to!int;
+    public void byNearestAddition(Path prev_path) {
+        int num_node = this.arc_info.length.to!int;
         Path path = prev_path.dup;
 
         if (path.length <= 1) {
@@ -184,7 +187,7 @@ public class PathList {
         }
 
         // 既存nodeのインデックスを取得し、その後ろに新規nodeを挿入する。
-        this.byNearestAddition(arc_info, path.insert(min_pair[0], min_pair[1]));
+        this.byNearestAddition(path.insert(min_pair[0], min_pair[1]));
     }
 
     /**
@@ -192,7 +195,7 @@ public class PathList {
      * @param arc_info arcの情報
      * @param prev_path 現状のpath
      */
-    public void byGreedy(in int[][] arc_info, Path prev_path) {
+    public void byGreedy(Path prev_path) {
         ;
     }
 
@@ -201,8 +204,8 @@ public class PathList {
      * @param arc_info arcの情報
      * @param prev_path 現状のpath
      */
-    public void byNearestNeighbor(in int[][] arc_info, Path prev_path) {
-        int num_node = arc_info.length.to!int;
+    public void byNearestNeighbor(Path prev_path) {
+        int num_node = this.arc_info.length.to!int;
 
         // すべてのnodeがpathに加えられたら、始点を終点として追加して終了
         if (prev_path.length() >= num_node) {
@@ -220,6 +223,6 @@ public class PathList {
             }
         }
 
-        this.byNearestNeighbor(arc_info, prev_path.dup.add(next_node));
+        this.byNearestNeighbor(prev_path.dup.add(next_node));
     }
 }

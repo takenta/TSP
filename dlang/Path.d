@@ -7,24 +7,20 @@ import std.container.array;
 public class Path {
     private const int[][] arc_info;
     private int[] path;
-    private int cost;
 
     this(in int[][] arc_info) {
         this.arc_info = arc_info;
         this.path = [];
-        this.cost = 0;
     }
 
     this(in int[][] arc_info, int start_point) {
         this.arc_info = arc_info;
         this.path = [start_point];
-        this.cost = 0;
     }
 
     this(Path path) {
         this.arc_info = path.arc_info;
         this.path = path.path.dup;
-        this.cost = path.cost;
     }
 
     /**

@@ -19,11 +19,13 @@ void main(string[] args) {
             line ~= num.to!int;
         });
         arc_info ~= line;
+        line.writeln;
     }
 
-    PathList path_list = new PathList(start_point);
+    PathList path_list = new PathList(arc_info, start_point);
 
-    // pathのコストが最大・最小のpathを表示
-    path_list.setOptimalPath("NN", arc_info);
+    // pathのコストが最小のpathを表示
+    writeln("================");
+    path_list.setOptimalPath("NN");
     writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.getCost, ")");
 }
