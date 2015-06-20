@@ -192,7 +192,7 @@ public class PathList {
 
         // 配列をコストについて昇順に
         arcs.sort!("a.cost < b.cost");
-        arcs = arcs.remove!(a => a.prev == a.next);
+        arcs = arcs.remove!(a => a.prev == a.next || a.next == this.start_point);
 
         Path generateOptimalPath(Path prev_path, Tuple!(int, "prev", int, "next", int, "cost")[] unused_arcs) {
             Path optimal_path = prev_path.dup;
@@ -229,11 +229,7 @@ public class PathList {
 
         int now_node = prev_path.get.back; // 現在のノード
         int next_node = now_node;
-<<<<<<< HEAD
-        foreach (node; 0..num_node) {
-=======
         foreach (node; unused_nodes) {
->>>>>>> greedy-method
             if (next_node == now_node || arc_info[now_node][next_node] - arc_info[now_node][node] > 0) {
                 next_node = node;
             }
