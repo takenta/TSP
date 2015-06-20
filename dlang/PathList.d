@@ -182,7 +182,12 @@ public class PathList {
      */
     private void byGreedy(Path prev_path) {
         // Tuple([int int], int)の配列を生成する。
+        alias Arc = Tuple!([int, int], "path", int, "cost");
+        Arc[] arcs = [];
+
         // 全てのArcとそのコストを組み合わせて、配列に格納する。
+
+
         // 配列をコストについて昇順に
         ;
     }
@@ -193,8 +198,6 @@ public class PathList {
      * @param prev_path 現状のpath
      */
     private void byNearestNeighbor(Path prev_path, int[] unused_nodes) {
-        int num_node = this.arc_info.length.to!int;
-
         // すべてのnodeがpathに加えられたら、始点を終点として追加して終了
         if (unused_nodes.empty) {
             this.optimal_path = prev_path.add(prev_path.get.front);
