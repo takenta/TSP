@@ -26,6 +26,6 @@ void main(string[] args) {
 
     // pathのコストが最大・最小のpathを表示
     writeln("================");
-    path_list.setOptimalPath("BF", arc_info);
+    path_list.setOptimalPath("BF");
     writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.getCost, ")");
 }
