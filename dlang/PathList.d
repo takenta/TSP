@@ -3,6 +3,7 @@ import std.array;
 import std.conv;
 import std.container.array;
 import std.algorithm;
+import std.typecons;
 import Path;
 
 public class PathList {
@@ -61,27 +62,25 @@ public class PathList {
     public void setPathAll() {
         int[] unused_nodes = [];
         foreach (num; 0..this.arc_info.length) unused_nodes ~= num;
-        this.path_list = this.generatePathAll(new Path(this.arc_info, this.start_point), unused_nodes.remove!(a => a == this.start_point));
-    }
 
-    /**
-     * すべてのpathを生成して、それを配列に格納して返す。
-     * @param prev_path 現状のpath
-     */
-    private Path[] generatePathAll(Path prev_path, int[] unused_nodes) {
-        Path[] buffer = [];
+        Path[] generatePathAll(Path prev_path, int[] unused_nodes) {
+            Path[] buffer = [];
 
-        if (unused_nodes.empty) {
-            prev_path.add(prev_path.get.front);
-            return [prev_path];
+            if (unused_nodes.empty) {
+                prev_path.add(prev_path.get.front);
+                return [prev_path];
+            }
+
+            unused_nodes.each!((node) {
+                buffer ~= generatePathAll(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node));
+            });
+
+            return buffer;
         }
 
-        unused_nodes.each!((node) {
-            buffer ~= generatePathAll(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node));
-        });
-
-        return buffer;
+        this.path_list = generatePathAll(new Path(this.arc_info, this.start_point), unused_nodes.remove!(a => a == this.start_point));
     }
+
 
     public void setOptimalPath(string method) {
         int[] unused_nodes = [];
@@ -103,7 +102,7 @@ public class PathList {
                 break;
             case "G":
                 writeln("Greedy method");
-                this.byGreedy(new Path(this.arc_info, this.start_point));
+                this.byGreedy();
                 break;
             case "NN":
                 writeln("Nearest Neighbor method");
@@ -178,18 +177,42 @@ public class PathList {
 
     /**
      * Greedy法によってコストが最小のpathを発見し、フィールドに代入する。
-     * @param prev_path 現状のpath
      */
-    private void byGreedy(Path prev_path) {
+    private void byGreedy() {
         // Tuple([int int], int)の配列を生成する。
-        alias Arc = Tuple!([int, int], "path", int, "cost");
+        alias Arc = Tuple!(int, "prev", int, "next", int, "cost");
         Arc[] arcs = [];
 
         // 全てのArcとそのコストを組み合わせて、配列に格納する。
-
+        foreach (i; 0..this.arc_info.length) {
+            foreach (j; 0..this.arc_info.length) {
+                arcs ~= Arc(i, j, this.arc_info[i][j]);
+            }
+        }
 
         // 配列をコストについて昇順に
-        ;
+        arcs.sort!("a.cost < b.cost");
+        arcs = arcs.remove!(a => a.prev == a.next);
+
+        Path generateOptimalPath(Path prev_path, Tuple!(int, "prev", int, "next", int, "cost")[] unused_arcs) {
+            Path optimal_path = prev_path.dup;
+
+            if (unused_arcs.empty) {
+                optimal_path.add(optimal_path.get.front);
+                return optimal_path;
+            }
+
+            int last_node = optimal_path.get.back;
+            foreach(arc; unused_arcs) {
+                if (arc.prev != last_node) continue;
+
+                return generateOptimalPath(optimal_path.add(arc.next), unused_arcs.remove!(a => a.next == arc.next));
+            }
+
+            return optimal_path;
+        }
+
+        this.optimal_path = generateOptimalPath(new Path(this.arc_info, this.start_point), arcs);
     }
 
     /**
@@ -206,7 +229,11 @@ public class PathList {
 
         int now_node = prev_path.get.back; // 現在のノード
         int next_node = now_node;
+<<<<<<< HEAD
         foreach (node; 0..num_node) {
+=======
+        foreach (node; unused_nodes) {
+>>>>>>> greedy-method
             if (next_node == now_node || arc_info[now_node][next_node] - arc_info[now_node][node] > 0) {
                 next_node = node;
             }

@@ -24,7 +24,7 @@ void main(string[] args) {
 
     PathList path_list = new PathList(arc_info, start_point);
 
-    foreach (method; ["AE", "BF", "NA", "NN"]) {
+    foreach (method; ["AE", "BF", "NA", "G", "NN"]) {
         writeln("================");
         path_list.setOptimalPath(method);
         writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.getCost, ")");
