@@ -76,11 +76,9 @@ public class PathList {
             return [prev_path];
         }
 
-        foreach(int i, int node; unused_nodes) {
-            if(!prev_path.canFind(node)) {
-                buffer ~= generatePathAll(prev_path.dup.add(node), unused_nodes.dup.remove(i));
-            }
-        }
+        unused_nodes.each!((node) {
+            buffer ~= generatePathAll(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node));
+        });
 
         return buffer;
     }
