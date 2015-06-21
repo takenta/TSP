@@ -90,23 +90,23 @@ public class PathList {
         switch (method) {
             case "AE":
                 writeln("All Enumration method");
-                this.byAllEnumerate(new Path(this.arc_info, this.start_point));
+                this.optimal_path = this.byAllEnumerate(new Path(this.arc_info, this.start_point));
                 break;
             case "BF":
                 writeln("Brute Force method");
-                this.byBruteForce(new Path(this.arc_info, this.start_point), unused_nodes);
+                this.optimal_path = this.byBruteForce(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
             case "NA":
                 writeln("Nearest Addtion method");
-                this.byNearestAddition(new Path(this.arc_info, this.start_point), unused_nodes);
+                this.optimal_path = this.byNearestAddition(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
             case "G":
                 writeln("Greedy method");
-                this.byGreedy();
+                this.optimal_path = this.byGreedy();
                 break;
             case "NN":
                 writeln("Nearest Neighbor method");
-                this.byNearestNeighbor(new Path(this.arc_info, this.start_point), unused_nodes);
+                this.optimal_path = this.byNearestNeighbor(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
             default:
                 writeln("It's not exists.");
@@ -115,40 +115,47 @@ public class PathList {
     }
 
     /**
-     * 完全列挙法によってコストが最小のpathを発見し、フィールドに代入する。
+     * 完全列挙法によってコストが最小のpathを発見し、返す。
      * @param prev_path 現状のpath
+     * @return コストが最小のpath
      */
-    private void byAllEnumerate(Path prev_path) {
-        this.setPathAll();
-        this.sort;
+    private Path byAllEnumerate(Path prev_path) {
+        Path optimal_path = null;
+
+        this.setPathAll;    // すべてのパスを生成する
+        this.sort;          // パスをコストの昇順にソートする
         this.path_list.each!((path){
-            if (this.optimal_path is null || this.optimal_path.getCost - path.getCost > 0)
-                this.optimal_path = path;
+            if (optimal_path is null || optimal_path.getCost > path.getCost)
+                optimal_path = path;
         });
+
+        return optimal_path;
     }
 
     /**
      * 順次生成・比較法によってコストが最小のpathを発見し、フィールドに代入する。
      * @param prev_path 現状のpath
      */
-    private void byBruteForce(Path prev_path, int[] unused_nodes) {
+    private Path byBruteForce(Path prev_path, int[] unused_nodes) {
         if (unused_nodes.empty) {
             prev_path.add(prev_path.get.front);
-            if (this.optimal_path is null || this.optimal_path.getCost - prev_path.getCost > 0)
-                this.optimal_path = prev_path;
-            return; // 探索打ち切り
+            return prev_path;
         }
 
+        Path optimal_path = null;
         unused_nodes.each!((node) {
-            this.byBruteForce(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node));
+            Path temp = byBruteForce(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node));
+            if (optimal_path is null || optimal_path.getCost > temp.getCost)
+                optimal_path = temp;
         });
+        return optimal_path;
     }
 
     /**
      * Nearest Addtion法によってコストが最小のpathを発見し、フィールドに代入する。
      * @param prev_path 現状のpath
      */
-    private void byNearestAddition(Path prev_path, int[] unused_nodes) {
+    private Path byNearestAddition(Path prev_path, int[] unused_nodes) {
         Path path = prev_path.dup;
 
         if (path.length <= 1) {
@@ -157,8 +164,7 @@ public class PathList {
 
         // すべての node が path に加えられたら、始点を終点として追加して終了
         if (unused_nodes.empty) {
-            this.optimal_path = prev_path;
-            return; // 探索打ち切り
+            return prev_path;
         }
 
         // path に追加されている node (既存 node )とされていない node (新規 node )からコストが最小の組を一つ選出する。
@@ -172,13 +178,13 @@ public class PathList {
         }
 
         // 既存nodeのインデックスを取得し、その後ろに新規nodeを挿入する。
-        this.byNearestAddition(path.insert(min_pair[0], min_pair[1]), unused_nodes.remove!(a => a == min_pair[1]));
+        return byNearestAddition(path.insert(min_pair[0], min_pair[1]), unused_nodes.remove!(a => a == min_pair[1]));
     }
 
     /**
      * Greedy法によってコストが最小のpathを発見し、フィールドに代入する。
      */
-    private void byGreedy() {
+    private Path byGreedy() {
         // Tuple([int int], int)の配列を生成する。
         alias Arc = Tuple!(int, "prev", int, "next", int, "cost");
         Arc[] arcs = [];
@@ -195,24 +201,19 @@ public class PathList {
         arcs = arcs.remove!(a => a.prev == a.next || a.next == this.start_point);
 
         Path generateOptimalPath(Path prev_path, Tuple!(int, "prev", int, "next", int, "cost")[] unused_arcs) {
-            Path optimal_path = prev_path.dup;
+            Path path = prev_path.dup;
 
             if (unused_arcs.empty) {
-                optimal_path.add(optimal_path.get.front);
-                return optimal_path;
+                path.add(path.get.front);
+                return path;
             }
 
-            int last_node = optimal_path.get.back;
-            foreach(arc; unused_arcs) {
-                if (arc.prev != last_node) continue;
-
-                return generateOptimalPath(optimal_path.add(arc.next), unused_arcs.remove!(a => a.next == arc.next));
-            }
-
-            return optimal_path;
+            int last_node = path.get.back;
+            Arc next_arc = unused_arcs.filter!(a => a.prev == last_node).front;
+            return generateOptimalPath(path.add(next_arc.next), unused_arcs.remove!(a => a.next == next_arc.next));
         }
 
-        this.optimal_path = generateOptimalPath(new Path(this.arc_info, this.start_point), arcs);
+        return generateOptimalPath(new Path(this.arc_info, this.start_point), arcs);
     }
 
     /**
@@ -220,11 +221,10 @@ public class PathList {
      * @param arc_info arcの情報
      * @param prev_path 現状のpath
      */
-    private void byNearestNeighbor(Path prev_path, int[] unused_nodes) {
+    private Path byNearestNeighbor(Path prev_path, int[] unused_nodes) {
         // すべてのnodeがpathに加えられたら、始点を終点として追加して終了
         if (unused_nodes.empty) {
-            this.optimal_path = prev_path.add(prev_path.get.front);
-            return; // 探索打ち切り
+            return prev_path.add(prev_path.get.front);
         }
 
         int now_node = prev_path.get.back; // 現在のノード
@@ -235,6 +235,6 @@ public class PathList {
             }
         }
 
-        this.byNearestNeighbor(prev_path.dup.add(next_node), unused_nodes.remove!(a => a == next_node));
+        return byNearestNeighbor(prev_path.dup.add(next_node), unused_nodes.remove!(a => a == next_node));
     }
 }
