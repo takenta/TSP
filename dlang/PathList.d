@@ -26,32 +26,61 @@ public class PathList {
         this.optimal_path = path_list.optimal_path;
     }
 
+    /**
+     * リストにpathを追加する。
+     * @param 追加するpath
+     * @return pathを追加したリストの複製
+     */
     public PathList add(Path path) {
         this.path_list ~= path;
         return this.dup;
     }
 
+    /**
+     * リストに追加されているpathの個数を取得する。
+     * @return リストに追加されているpathの個数
+     */
     public ulong length() {
         return this.path_list.length;
     }
 
+    /**
+     * リストに登録されているpathの始点を取得する。
+     * @return リストに登録されているpathの始点
+     */
     public int getStartPoint() {
         return this.getStartPoint;
     }
 
+    /**
+     * リストに登録されているpathを配列として取得する。
+     * @return リストに登録されているpathを格納した配列
+     */
     public Path[] getList() {
         return this.path_list.dup;
     }
 
+    /**
+     * Arcの情報から最適に近いpathを取得する。
+     * @return 最適に近いpath
+     */
     public Path getOptimalPath() {
         return this.optimal_path.dup;
     }
 
+    /**
+     * 登録されているpathをコストの昇順にソートする。
+     * @return ソートしたリストの複製
+     */
     public Path[] sort() {
-        this.path_list.sort!("a.getCost < b.getCost");
+        this.path_list.sort!("a.cost < b.cost");
         return this.path_list.dup;
     }
 
+    /**
+     * リストの複製を取得する。
+     * @return 複製されたpathのリスト
+     */
     public PathList dup() {
         return new PathList(this);
     }
@@ -81,7 +110,16 @@ public class PathList {
         this.path_list = generatePathAll(new Path(this.arc_info, this.start_point), unused_nodes.remove!(a => a == this.start_point));
     }
 
-
+    /**
+     * アルゴリズムに従って最適であろう閉路を生成し、フィールドに格納する。
+     * 使用するアルゴリズムは引数での指定に従う。使用できるアルゴリズムは以下の５つ。
+     *   完全列挙法(AE)
+     *   順次生成・比較法(BF)
+     *   最近追加法(NA)
+     *   貪欲法(G)
+     *   近傍法(NN)
+     * @param method 使用するアルゴリズム
+     */
     public void setOptimalPath(string method) {
         int[] unused_nodes = [];
         foreach (num; 0..this.arc_info.length) unused_nodes ~= num.to!int;
@@ -109,14 +147,14 @@ public class PathList {
                 this.optimal_path = this.byNearestNeighbor(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
             default:
-                writeln("It's not exists.");
+                writeln("The command isn't exists.");
 
         }
     }
 
     /**
      * 完全列挙法によってコストが最小のpathを発見し、返す。
-     * @param prev_path 現状のpath
+     * @param prev_path 生成途中のpath
      * @return コストが最小のpath
      */
     private Path byAllEnumerate(Path prev_path) {
@@ -125,7 +163,7 @@ public class PathList {
         this.setPathAll;    // すべてのパスを生成する
         this.sort;          // パスをコストの昇順にソートする
         this.path_list.each!((path){
-            if (optimal_path is null || optimal_path.getCost > path.getCost)
+            if (optimal_path is null || optimal_path.cost > path.cost)
                 optimal_path = path;
         });
 
@@ -134,7 +172,9 @@ public class PathList {
 
     /**
      * 順次生成・比較法によってコストが最小のpathを発見し、フィールドに代入する。
-     * @param prev_path 現状のpath
+     * @param prev_path 生成途中のpath
+     * @param unused_nodes pathに含まれていないnodeの集合
+     * @return コストが最小のpath
      */
     private Path byBruteForce(Path prev_path, int[] unused_nodes) {
         if (unused_nodes.empty) {
@@ -145,7 +185,7 @@ public class PathList {
         Path optimal_path = null;
         unused_nodes.each!((node) {
             Path temp = byBruteForce(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node));
-            if (optimal_path is null || optimal_path.getCost > temp.getCost)
+            if (optimal_path is null || optimal_path.cost > temp.cost)
                 optimal_path = temp;
         });
         return optimal_path;
@@ -153,7 +193,9 @@ public class PathList {
 
     /**
      * Nearest Addtion法によってコストが最小のpathを発見し、フィールドに代入する。
-     * @param prev_path 現状のpath
+     * @param prev_path 生成途中のpath
+     * @param unused_nodes pathに含まれていないnodeの集合
+     * @return コストが最小のpath
      */
     private Path byNearestAddition(Path prev_path, int[] unused_nodes) {
         Path path = prev_path.dup;
@@ -183,6 +225,7 @@ public class PathList {
 
     /**
      * Greedy法によってコストが最小のpathを発見し、フィールドに代入する。
+     * @return コストが最小のpath
      */
     private Path byGreedy() {
         // Tuple([int int], int)の配列を生成する。
@@ -218,8 +261,9 @@ public class PathList {
 
     /**
      * Nearest Neighbor法によってコストが最小のpathを発見し、フィールドに代入する。
-     * @param arc_info arcの情報
-     * @param prev_path 現状のpath
+     * @param prev_path 生成途中のpath
+     * @param unused_nodes pathに含まれていないnodeの集合
+     * @return コストが最小のpath
      */
     private Path byNearestNeighbor(Path prev_path, int[] unused_nodes) {
         // すべてのnodeがpathに加えられたら、始点を終点として追加して終了

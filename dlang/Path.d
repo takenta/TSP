@@ -35,45 +35,73 @@ public class Path {
         return this.dup;
     }
 
+    /**
+     * 指定したnodeの後ろに新たなnodeを挿入する。
+     * @param before_node 挿入する箇所
+     * @param node 挿入するnode
+     */
     public Path insert(int before_node, int node) {
         auto index = this.indexOf(before_node) + 1;
         this.path.insertInPlace(index, node);
         return this.dup;
     }
 
-    public ulong indexOf(int node) {
+    /**
+     * 指定したnodeのindexを取得する。
+     * @param 指定するnode
+     * @return 指定したnodeのindex
+     */
+    public uint indexOf(int node) {
         foreach (int i, int sample; this.path) {
             if (node == sample) return i;
         }
-        return this.path.length;
+        return this.path.length.to!uint;
     }
 
+    /**
+     * pathをint型の配列として取得する。
+     * @return pathを格納したint型配列
+     */
     public int[] get() {
         return this.path.dup;
     }
 
-    public int getCost() {
-        return this.calc(this.arc_info, this.path, 0);
+    /**
+     * pathのコストをint型で取得する。
+     * @return pathのコスト
+     */
+    public int cost() {
+        return this.calc(this.path, 0);
     }
 
-    public bool canFind(int node) {
-        return std.algorithm.canFind(path, node);
-    }
-
+    /**
+     * pathの長さ(path内のnodeの数)を取得する。
+     * @return pathの長さ
+     */
     public int length() {
         return this.path.length.to!int;
     }
 
+    /**
+     * pathの複製を取得する。
+     * @return 複製されたpath
+     */
     public Path dup() {
         return new Path(this);
     }
 
-    public int calc(in int[][] arc_info, in int[] path, in int cost) {
+    /**
+     * 指定されたpathのコストを算出する。
+     * @param path コストを算出するpath
+     * @param cost コストの初期値
+     * @return 算出したpathのコスト
+     */
+    private int calc(in int[] path, in int cost) {
         int[] cloned_path = path.dup;
 
         if (cloned_path.length <= 1) return cost;
 
-        int arc_cost = arc_info[cloned_path[0]][cloned_path[1]];
-        return cost + this.calc(arc_info, cloned_path.remove(0), arc_cost);
+        int arc_cost = this.arc_info[cloned_path[0]][cloned_path[1]];
+        return cost + this.calc(cloned_path.remove(0), arc_cost);
     }
 }
