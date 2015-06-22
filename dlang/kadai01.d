@@ -2,7 +2,6 @@ import std.stdio;
 import std.string;
 import std.algorithm;
 import std.conv;
-import Path;
 import PathList;
 
 

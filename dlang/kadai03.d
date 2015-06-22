@@ -2,7 +2,6 @@ import std.stdio;
 import std.string;
 import std.algorithm;
 import std.conv;
-import Path;
 import PathList;
 
 
@@ -27,5 +26,5 @@ void main(string[] args) {
     // pathのコストが最大・最小のpathを表示
     writeln("================");
     path_list.setOptimalPath("NA");
-    writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.getCost, ")");
+    writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.cost, ")");
 }

@@ -2,7 +2,6 @@ import std.stdio;
 import std.string;
 import std.algorithm;
 import std.conv;
-import Path;
 import PathList;
 
 
@@ -27,6 +26,6 @@ void main(string[] args) {
     foreach (method; ["AE", "BF", "NA", "G", "NN"]) {
         writeln("================");
         path_list.setOptimalPath(method);
-        writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.getCost, ")");
+        writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.cost, ")");
     }
 }
