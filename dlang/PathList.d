@@ -61,7 +61,7 @@ public class PathList {
      */
     public void setPathAll() {
         int[] unused_nodes = [];
-        foreach (num; 0..this.arc_info.length) unused_nodes ~= num;
+        foreach (num; 0..this.arc_info.length) unused_nodes ~= num.to!int;
 
         Path[] generatePathAll(Path prev_path, int[] unused_nodes) {
             Path[] buffer = [];
@@ -84,7 +84,7 @@ public class PathList {
 
     public void setOptimalPath(string method) {
         int[] unused_nodes = [];
-        foreach (num; 0..this.arc_info.length) unused_nodes ~= num;
+        foreach (num; 0..this.arc_info.length) unused_nodes ~= num.to!int;
         unused_nodes.remove!(a => a == this.start_point);
 
         switch (method) {
@@ -192,7 +192,7 @@ public class PathList {
         // 全てのArcとそのコストを組み合わせて、配列に格納する。
         foreach (i; 0..this.arc_info.length) {
             foreach (j; 0..this.arc_info.length) {
-                arcs ~= Arc(i, j, this.arc_info[i][j]);
+                arcs ~= Arc(i.to!int, j.to!int, this.arc_info[i][j]);
             }
         }
 
@@ -200,7 +200,7 @@ public class PathList {
         arcs.sort!("a.cost < b.cost");
         arcs = arcs.remove!(a => a.prev == a.next || a.next == this.start_point);
 
-        Path generateOptimalPath(Path prev_path, Tuple!(int, "prev", int, "next", int, "cost")[] unused_arcs) {
+        Path generateOptimalPath(Path prev_path, Arc[] unused_arcs) {
             Path path = prev_path.dup;
 
             if (unused_arcs.empty) {

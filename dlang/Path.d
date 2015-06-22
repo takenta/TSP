@@ -41,7 +41,7 @@ public class Path {
         return this.dup;
     }
 
-    public uint indexOf(int node) {
+    public ulong indexOf(int node) {
         foreach (int i, int sample; this.path) {
             if (node == sample) return i;
         }
