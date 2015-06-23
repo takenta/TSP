@@ -26,5 +26,5 @@ void main(string[] args) {
     // 全てのpathの内容とコストを表示
     writeln("================");
     path_list.setOptimalPath("AE");
-    writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.getCost, ")");
+    writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.cost, ")");
 }
