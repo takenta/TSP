@@ -124,7 +124,7 @@ public class PathList {
         switch (method) {
             case "AE":
                 writeln("All Enumration method");
-                this.optimal_path = this.byAllEnumerate(new Path(this.arc_info, this.start_point));
+                this.optimal_path = this.byAllEnumerate();
                 break;
             case "BF":
                 writeln("Brute Force method");
@@ -147,7 +147,6 @@ public class PathList {
                 break;
             default:
                 writeln("The command isn't exists.");
-
         }
     }
 
@@ -156,11 +155,11 @@ public class PathList {
      * @param prev_path 生成途中のpath
      * @return コストが最小のpath
      */
-    private Path byAllEnumerate(Path prev_path) {
+    private Path byAllEnumerate() {
         Path optimal_path = null;
 
         this.setPathAll;    // すべてのパスを生成する
-        this.sort;          // パスをコストの昇順にソートする
+        //this.sort;          // パスをコストの昇順にソートする
         this.path_list.each!((path) {
             if (optimal_path is null || optimal_path.cost > path.cost)
                 optimal_path = path;
