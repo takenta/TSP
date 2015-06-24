@@ -1,5 +1,6 @@
 import std.stdio;
 import std.array;
+import std.range;
 import std.conv;
 import std.container.array;
 import std.algorithm;
@@ -89,8 +90,7 @@ public class PathList {
      * すべてのpathを生成して、フィールドに格納する。
      */
     public void setPathAll() {
-        int[] unused_nodes = [];
-        foreach (num; 0..this.arc_info.length) unused_nodes ~= num.to!int;
+        int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array.remove!(a => a == this.start_point);
 
         Path[] generatePathAll(Path prev_path, int[] unused_nodes) {
             Path[] buffer = [];
@@ -121,10 +121,6 @@ public class PathList {
      * @param method 使用するアルゴリズム
      */
     public void setOptimalPath(string method) {
-        int[] unused_nodes = [];
-        foreach (num; 0..this.arc_info.length) unused_nodes ~= num.to!int;
-        unused_nodes.remove!(a => a == this.start_point);
-
         switch (method) {
             case "AE":
                 writeln("All Enumration method");
@@ -132,10 +128,12 @@ public class PathList {
                 break;
             case "BF":
                 writeln("Brute Force method");
+                int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array.remove!(a => a == this.start_point);
                 this.optimal_path = this.byBruteForce(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
             case "NA":
                 writeln("Nearest Addtion method");
+                int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array.remove!(a => a == this.start_point);
                 this.optimal_path = this.byNearestAddition(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
             case "G":
@@ -144,6 +142,7 @@ public class PathList {
                 break;
             case "NN":
                 writeln("Nearest Neighbor method");
+                int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array.remove!(a => a == this.start_point);
                 this.optimal_path = this.byNearestNeighbor(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
             default:
@@ -162,7 +161,7 @@ public class PathList {
 
         this.setPathAll;    // すべてのパスを生成する
         this.sort;          // パスをコストの昇順にソートする
-        this.path_list.each!((path){
+        this.path_list.each!((path) {
             if (optimal_path is null || optimal_path.cost > path.cost)
                 optimal_path = path;
         });
