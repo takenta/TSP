@@ -90,14 +90,13 @@ public class PathList {
      * すべてのpathを生成して、フィールドに格納する。
      */
     public void setPathAll() {
-        int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array.remove!(a => a == this.start_point);
+        int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
 
         Path[] generatePathAll(Path prev_path, int[] unused_nodes) {
             Path[] buffer = [];
 
             if (unused_nodes.empty) {
-                prev_path.add(prev_path.get.front);
-                return [prev_path];
+                return [prev_path.add(prev_path.get.front)];
             }
 
             unused_nodes.each!((node) {
