@@ -1,12 +1,14 @@
 import std.stdio;
 import std.string;
 import std.conv;
+import std.array;
 import std.random;
 import std.algorithm;
 
-void main() {
-    immutable uint num_node = 10;
-    ulong arc_info[num_node][num_node];
+void main(string[] args) {
+    uint num_node = args[1].to!uint;
+    auto arc_info = new ulong[][](num_node, num_node);
+    auto seed = Random(unpredictableSeed);
 
     foreach (i; 0..num_node) {
         foreach (j; i..num_node) {
@@ -15,7 +17,7 @@ void main() {
                 continue;
             }
 
-            arc_info[i][j] = dice(0,10,10,10,10,10,10,10,10,10);
+            arc_info[i][j] = uniform(1, 10, seed);
             arc_info[j][i] = arc_info[i][j];
         }
     }
