@@ -75,9 +75,9 @@ int main(void){
   /*-----------------------------------------
     コンソール出力
   ------------------------------------------*/
-  //printf("最小コスト経路=\n");
-  //func_printROUTE(minimum);
-  //printf("\n");
+  printf("最小コスト経路=\n");
+  func_printROUTE(minimum);
+  printf("\n");
 
   
   free(route_array);
