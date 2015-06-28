@@ -145,7 +145,7 @@ public class PathList {
                 this.optimal_path = this.byNearestNeighbor(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
             default:
-                writeln("The command isn't exists.");
+                writeln("The command don't exists.");
         }
     }
 
