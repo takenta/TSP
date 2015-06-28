@@ -1,4 +1,5 @@
 *.sublime-project
 *.sublime-workspace
+dlang/*.obj
 rust/src/tmp*
-target
+rust/target
