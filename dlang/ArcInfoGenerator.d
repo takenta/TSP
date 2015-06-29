@@ -22,10 +22,5 @@ void main(string[] args) {
         }
     }
 
-    foreach (line; arc_info) {
-        foreach (node; line) {
-            write(node, " ");
-        }
-        writeln;
-    }
+    arc_info.map!(a => a.map!(to!string).join(" ")).join("\n").writeln;
 }
