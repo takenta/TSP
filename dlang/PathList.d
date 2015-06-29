@@ -5,6 +5,7 @@ import std.conv;
 import std.container.array;
 import std.algorithm;
 import std.typecons;
+import std.mathspecial;
 import Path;
 
 public class PathList {
@@ -90,19 +91,25 @@ public class PathList {
      * すべてのpathを生成して、フィールドに格納する。
      */
     public void setPathAll() {
+        /* 未使用nodeの集合を生成する */
         int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
 
         Path[] generatePathAll(Path prev_path, int[] unused_nodes) {
+            //Path[] buffer = new Path[gamma(unused_nodes.length.to!real).to!uint];
             Path[] buffer = [];
 
+            /* 未使用のnodeがなくなったら終了 */
             if (unused_nodes.empty) {
-                return [prev_path.add(prev_path.get.front)];
+                prev_path.close;
+                return [prev_path];
             }
 
+            /* 未使用のnodeそれぞれについて枝を伸ばす */
             unused_nodes.each!((node) {
                 buffer ~= generatePathAll(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node));
             });
 
+            /* 現在位置のnodeから伸びている葉を格納した配列を返す */
             return buffer;
         }
 
@@ -158,7 +165,6 @@ public class PathList {
         Path optimal_path = null;
 
         this.setPathAll;    // すべてのパスを生成する
-        //this.sort;          // パスをコストの昇順にソートする
         this.path_list.each!((path) {
             if (optimal_path is null || optimal_path.cost > path.cost)
                 optimal_path = path;
@@ -175,7 +181,7 @@ public class PathList {
      */
     private Path byBruteForce(Path prev_path, int[] unused_nodes) {
         if (unused_nodes.empty) {
-            prev_path.add(prev_path.get.front);
+            prev_path.close;
             return prev_path;
         }
 

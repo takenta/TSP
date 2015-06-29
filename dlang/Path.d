@@ -7,20 +7,24 @@ import std.container.array;
 public class Path {
     private const int[][] arc_info;
     private int[] path;
+    private int path_cost;
 
     this(in int[][] arc_info) {
         this.arc_info = arc_info;
         this.path = [];
+        this.path_cost = 0;
     }
 
     this(in int[][] arc_info, int start_point) {
         this.arc_info = arc_info;
         this.path = [start_point];
+        this.path_cost = 0;
     }
 
     this(Path path) {
         this.arc_info = path.arc_info;
         this.path = path.path.dup;
+        this.path_cost = path.cost;
     }
 
     /**
@@ -71,7 +75,14 @@ public class Path {
      * @return pathのコスト
      */
     public int cost() {
-        return this.calc(this.path, 0);
+        return this.path_cost;
+    }
+
+    /**
+     * pathのコストを算出し、フィールドに格納する。
+     */
+    public void setCost() {
+        this.path_cost = this.calc(this.path, 0);
     }
 
     /**
@@ -96,12 +107,20 @@ public class Path {
      * @param cost コストの初期値
      * @return 算出したpathのコスト
      */
-    private int calc(in int[] path, in int cost) {
+    public int calc(in int[] path, in int cost) {
         int[] cloned_path = path.dup;
 
         if (cloned_path.length <= 1) return cost;
 
         int arc_cost = this.arc_info[cloned_path[0]][cloned_path[1]];
         return cost + this.calc(cloned_path.remove(0), arc_cost);
+    }
+
+    /**
+     * pathの最後に始点を追加することで、強制的に閉路を形成する。
+     */
+    public void close() {
+        this.add(this.path.front);
+        this.setCost;
     }
 }
