@@ -59,7 +59,7 @@ public class PathList {
      * @return リストに登録されているpathを格納した配列
      */
     public Path[] getList() {
-        return this.path_list.dup;
+        return this.path_list;
     }
 
     /**
@@ -67,16 +67,7 @@ public class PathList {
      * @return 最適に近いpath
      */
     public Path getOptimalPath() {
-        return this.optimal_path.dup;
-    }
-
-    /**
-     * 登録されているpathをコストの昇順にソートする。
-     * @return ソートしたリストの複製
-     */
-    public Path[] sort() {
-        this.path_list.sort!("a.cost < b.cost");
-        return this.path_list.dup;
+        return this.optimal_path;
     }
 
     /**
@@ -95,22 +86,15 @@ public class PathList {
         int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
 
         Path[] generatePathAll(Path prev_path, int[] unused_nodes) {
-            //Path[] buffer = new Path[gamma(unused_nodes.length.to!real).to!uint];
-            Path[] buffer = [];
-
             /* 未使用のnodeがなくなったら終了 */
             if (unused_nodes.empty) {
-                prev_path.close;
+                prev_path.close; // pathの末尾に始点を追加して、コストを算出
                 return [prev_path];
             }
 
             /* 未使用のnodeそれぞれについて枝を伸ばす */
-            unused_nodes.each!((node) {
-                buffer ~= generatePathAll(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node));
-            });
-
-            /* 現在位置のnodeから伸びている葉を格納した配列を返す */
-            return buffer;
+            return unused_nodes.map!(node => generatePathAll(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node)))
+                            .reduce!((a,b) => a ~ b);
         }
 
         this.path_list = generatePathAll(new Path(this.arc_info, this.start_point), unused_nodes.remove!(a => a == this.start_point));
@@ -162,15 +146,14 @@ public class PathList {
      * @return コストが最小のpath
      */
     private Path byAllEnumerate() {
-        Path optimal_path = null;
-
         this.setPathAll;    // すべてのパスを生成する
-        this.path_list.each!((path) {
-            if (optimal_path is null || optimal_path.cost > path.cost)
-                optimal_path = path;
-        });
 
-        return optimal_path;
+        return this.path_list.reduce!((a, b) {
+            if (a.cost < b.cost)
+                return a;
+            else
+                return b;
+        });
     }
 
     /**
@@ -185,13 +168,13 @@ public class PathList {
             return prev_path;
         }
 
-        Path optimal_path = null;
-        unused_nodes.each!((node) {
-            Path temp = byBruteForce(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node));
-            if (optimal_path is null || optimal_path.cost > temp.cost)
-                optimal_path = temp;
-        });
-        return optimal_path;
+        return unused_nodes.map!(node => byBruteForce(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node)))
+                        .reduce!((a,b) {
+                            if (a.cost < b.cost)
+                                return a;
+                            else
+                                return b;
+                        });
     }
 
     /**
@@ -201,20 +184,19 @@ public class PathList {
      * @return コストが最小のpath
      */
     private Path byNearestAddition(Path prev_path, int[] unused_nodes) {
-        Path path = prev_path.dup;
-
-        if (path.length <= 1) {
-            path.add(start_point);
+        if (prev_path.length <= 1) {
+            prev_path.add(start_point);
         }
 
         // すべての node が path に加えられたら、始点を終点として追加して終了
         if (unused_nodes.empty) {
+            prev_path.setCost;
             return prev_path;
         }
 
         // path に追加されている node (既存 node )とされていない node (新規 node )からコストが最小の組を一つ選出する。
         int[] min_pair = null;
-        foreach (prev_node; path.get) {
+        foreach (prev_node; prev_path.get) {
             foreach (next_node; unused_nodes) {
                 if (min_pair is null || arc_info[prev_node][next_node] < arc_info[min_pair[0]][min_pair[1]]) {
                     min_pair = [prev_node, next_node];
@@ -223,7 +205,7 @@ public class PathList {
         }
 
         // 既存nodeのインデックスを取得し、その後ろに新規nodeを挿入する。
-        return byNearestAddition(path.insert(min_pair[0], min_pair[1]), unused_nodes.remove!(a => a == min_pair[1]));
+        return byNearestAddition(prev_path.dup.insert(min_pair[0], min_pair[1]), unused_nodes.remove!(a => a == min_pair[1]));
     }
 
     /**
@@ -231,26 +213,26 @@ public class PathList {
      * @return コストが最小のpath
      */
     private Path byGreedy() {
-        // Tuple([int int], int)の配列を生成する。
+        // Tuple([int int], int)の配列を生成
         alias Arc = Tuple!(int, "prev", int, "next", int, "cost");
         Arc[] arcs = [];
 
-        // 全てのArcとそのコストを組み合わせて、配列に格納する。
+        // 全てのArcとそのコストを組み合わせて、配列に格納
         foreach (i; 0..this.arc_info.length) {
             foreach (j; 0..this.arc_info.length) {
                 arcs ~= Arc(i.to!int, j.to!int, this.arc_info[i][j]);
             }
         }
 
-        // 配列をコストについて昇順に
-        arcs.sort!("a.cost < b.cost");
+        // arcの配列をコストについて昇順にソート
+        arcs.sort!((a, b) => a.cost < b.cost);
         arcs = arcs.remove!(a => a.prev == a.next || a.next == this.start_point);
 
         Path generateOptimalPath(Path prev_path, Arc[] unused_arcs) {
             Path path = prev_path.dup;
 
             if (unused_arcs.empty) {
-                path.add(path.get.front);
+                path.close;
                 return path;
             }
 
@@ -271,16 +253,17 @@ public class PathList {
     private Path byNearestNeighbor(Path prev_path, int[] unused_nodes) {
         // すべてのnodeがpathに加えられたら、始点を終点として追加して終了
         if (unused_nodes.empty) {
-            return prev_path.add(prev_path.get.front);
+            prev_path.close;
+            return prev_path;
         }
 
         int now_node = prev_path.get.back; // 現在のノード
-        int next_node = now_node;
-        foreach (node; unused_nodes) {
-            if (next_node == now_node || arc_info[now_node][next_node] - arc_info[now_node][node] > 0) {
-                next_node = node;
-            }
-        }
+        int next_node = unused_nodes.reduce!((next, node) {
+            if (arc_info[now_node][next] < arc_info[now_node][node])
+                return next;
+            else
+                return node;
+        });
 
         return byNearestNeighbor(prev_path.dup.add(next_node), unused_nodes.remove!(a => a == next_node));
     }

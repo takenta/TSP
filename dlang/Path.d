@@ -36,7 +36,7 @@ public class Path {
     public Path add(int node) {
         auto prev_node = this.path.back;
         this.path ~= node;
-        return this.dup;
+        return this;
     }
 
     /**
