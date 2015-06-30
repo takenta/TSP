@@ -3,3 +3,5 @@
 dlang/*.obj
 rust/src/tmp*
 rust/target
+rust/release
+dlang/*.exe
