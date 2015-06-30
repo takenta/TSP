@@ -148,6 +148,7 @@ ROUTE *func_makeAllOfRoute(ROUTE route,CITY city,int *unusedNode,ROUTE *route_Li
     if(route.length == city.numCity){
       //func_addROUTEtoArray(route,route_List,route_List_Length,current);
       //printf("current = %d\n",*current);
+      route.cost += city.distanceMatrix[route.path[route.length-1]][0];
       route_List[*current] = route;
       route_List[*current].path = func_intArrayCopy(route.path,city.numCity);
       //func_printROUTE(route);
@@ -157,7 +158,7 @@ ROUTE *func_makeAllOfRoute(ROUTE route,CITY city,int *unusedNode,ROUTE *route_Li
 	if(unusedNode[i]){
 	  unusedNode[i] = 0;
 	  temp = route.cost;
-	  route.cost += city.distanceMatrix[route.path[route.length]][i];      
+	  route.cost += city.distanceMatrix[route.path[route.length-1]][i];      
 	  route.path[route.length] = i;
 	  route.length++;	
 	  func_makeAllOfRoute(route,city,unusedNode,route_List,route_List_Length,current);
