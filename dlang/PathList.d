@@ -113,25 +113,20 @@ public class PathList {
     public void setOptimalPath(string method) {
         switch (method) {
             case "AE":
-                writeln("All Enumration method");
                 this.optimal_path = this.byAllEnumerate();
                 break;
             case "BF":
-                writeln("Brute Force method");
                 int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array.remove!(a => a == this.start_point);
                 this.optimal_path = this.byBruteForce(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
             case "NA":
-                writeln("Nearest Addtion method");
                 int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array.remove!(a => a == this.start_point);
                 this.optimal_path = this.byNearestAddition(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
-            case "G":
-                writeln("Greedy method");
+            case "Gr":
                 this.optimal_path = this.byGreedy();
                 break;
             case "NN":
-                writeln("Nearest Neighbor method");
                 int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array.remove!(a => a == this.start_point);
                 this.optimal_path = this.byNearestNeighbor(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
