@@ -33,6 +33,6 @@ void main(string[] args) {
         }
         auto after = MonoTime.currTime;
         writeln("Optimal Path: ", path_list.getOptimalPath.get, "(", path_list.getOptimalPath.cost, ")");
-        writeln("Execute Time: ", (after - before)/repeat);
+        writeln("Execution Time: ", (after - before)/repeat);
     }
 }
