@@ -1,0 +1,21 @@
+0
+================
+All Enumerate
+Optimal Path: [0, 0](0)
+Execution Time: 2 μs and 3 hnsecs
+================
+Brute Force
+Optimal Path: [0, 0](0)
+Execution Time: 1 μs and 9 hnsecs
+================
+Nearest Addtion
+Optimal Path: [0, 0](0)
+Execution Time: 2 μs
+================
+Greedy
+Optimal Path: [0, 0](0)
+Execution Time: 3 μs and 5 hnsecs
+================
+Nearest Neighbor
+Optimal Path: [0, 0](0)
+Execution Time: 1 μs and 6 hnsecs

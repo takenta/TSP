@@ -6,8 +6,10 @@ import std.container.array;
 
 public class Path {
     private const int[][] arc_info;
-    private int[] path;
+    public int[] path;
     private int path_cost;
+
+    alias path this;
 
     this(in int[][] arc_info) {
         this.arc_info = arc_info;
@@ -28,13 +30,12 @@ public class Path {
     }
 
     /**
-     * pathにnodeを追加する。また、追加に伴ってpathのcostも更新する。
+     * pathにnodeを追加する。
      * 式の中で使用するために自身の複製を返す。
      * @param node 追加するノード
      * @return pathの複製
      */
     public Path add(int node) {
-        auto prev_node = this.path.back;
         this.path ~= node;
         return this;
     }

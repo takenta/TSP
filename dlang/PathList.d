@@ -6,6 +6,7 @@ import std.container.array;
 import std.algorithm;
 import std.typecons;
 import std.mathspecial;
+import std.parallelism;
 import Path;
 
 public class PathList {
@@ -82,9 +83,6 @@ public class PathList {
      * すべてのpathを生成して、フィールドに格納する。
      */
     public void setPathAll() {
-        // 未使用nodeの集合を生成する
-        int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
-
         Path[] generatePathAll(Path prev_path, int[] unused_nodes) {
             // 未使用のnodeがなくなったら終了
             if (unused_nodes.empty) {
@@ -96,6 +94,9 @@ public class PathList {
             return unused_nodes.map!(node => generatePathAll(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node)))
                 .reduce!((a,b) => a ~ b);
         }
+
+        // 未使用nodeの集合を生成する
+        int[] unused_nodes = recurrence!((a, n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
 
         this.path_list = generatePathAll(new Path(this.arc_info, this.start_point), unused_nodes.remove!(a => a == this.start_point));
     }
@@ -116,18 +117,18 @@ public class PathList {
                 this.optimal_path = this.byAllEnumerate();
                 break;
             case "BF":
-                int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array.remove!(a => a == this.start_point);
+                int[] unused_nodes = recurrence!((a, n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
                 this.optimal_path = this.byBruteForce(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
             case "NA":
-                int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array.remove!(a => a == this.start_point);
+                int[] unused_nodes = recurrence!((a, n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
                 this.optimal_path = this.byNearestAddition(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
             case "Gr":
                 this.optimal_path = this.byGreedy();
                 break;
             case "NN":
-                int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array.remove!(a => a == this.start_point);
+                int[] unused_nodes = recurrence!((a, n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
                 this.optimal_path = this.byNearestNeighbor(new Path(this.arc_info, this.start_point), unused_nodes);
                 break;
             default:
@@ -213,7 +214,7 @@ public class PathList {
         // 1. 全てのArc（2つのnodeの組み合わせ）を生成
         // 2. それらのArcとそのコストの組み合わせを生成
         // 3. 同一地点へのArc（0から0、1から1のようなArc）および0に向かうArcを（途中で始点に戻らないように）削除する
-        int[] nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
+        int[] nodes = recurrence!((a, n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
         Arc[] arcs = cartesianProduct(nodes, nodes).map!(a => Arc(a[0], a[1], arc_info[a[0]][a[1]]))    // Arcとそのコストを組み合わせを生成
             .filter!(a => a.prev != a.next && a.next != this.start_point)                               // 邪魔なArcの削除
             .array;                                                                                     // 配列化

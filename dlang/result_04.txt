@@ -1,24 +1,24 @@
-0 1 2 2
-1 0 5 2
-2 5 0 8
-2 2 8 0
+0 4 9 5
+4 0 8 1
+9 8 0 3
+5 1 3 0
 ================
 All Enumerate
-Optimal Path: [0, 3, 1, 2, 0](11)
-Execute Time: 39 μs and 7 hnsecs
+Optimal Path: [0, 2, 3, 1, 0](17)
+Execution Time: 36 μs and 7 hnsecs
 ================
 Brute Force
-Optimal Path: [0, 3, 1, 2, 0](11)
-Execute Time: 35 μs and 5 hnsecs
+Optimal Path: [0, 2, 3, 1, 0](17)
+Execution Time: 33 μs and 9 hnsecs
 ================
 Nearest Addtion
-Optimal Path: [0, 3, 2, 1, 0](16)
-Execute Time: 9 μs and 4 hnsecs
+Optimal Path: [0, 1, 3, 2, 0](17)
+Execution Time: 9 μs and 6 hnsecs
 ================
 Greedy
-Optimal Path: [0, 1, 3, 2, 0](13)
-Execute Time: 16 μs and 5 hnsecs
+Optimal Path: [0, 1, 3, 2, 0](17)
+Execution Time: 12 μs and 7 hnsecs
 ================
 Nearest Neighbor
-Optimal Path: [0, 1, 3, 2, 0](13)
-Execute Time: 6 μs and 3 hnsecs
+Optimal Path: [0, 1, 3, 2, 0](17)
+Execution Time: 6 μs and 3 hnsecs

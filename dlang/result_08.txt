@@ -1,28 +1,28 @@
-0 5 4 7 3 9 4 2
-5 0 5 1 4 7 5 8
-4 5 0 8 6 7 8 3
-7 1 8 0 1 4 2 3
-3 4 6 1 0 8 4 9
-9 7 7 4 8 0 8 3
-4 5 8 2 4 8 0 2
-2 8 3 3 9 3 2 0
+0 7 1 3 9 8 3 4
+7 0 5 5 7 1 9 4
+1 5 0 3 6 3 1 2
+3 5 3 0 6 3 3 1
+9 7 6 6 0 7 4 6
+8 1 3 3 7 0 1 2
+3 9 1 3 4 1 0 1
+4 4 2 1 6 2 1 0
 ================
 All Enumerate
-Optimal Path: [0, 6, 7, 5, 2, 1, 3, 4, 0](26)
-Execute Time: 33 ms, 62 μs, and 2 hnsecs
+Optimal Path: [0, 3, 7, 5, 1, 4, 6, 2, 0](20)
+Execution Time: 19 ms, 29 μs, and 8 hnsecs
 ================
 Brute Force
-Optimal Path: [0, 6, 7, 5, 2, 1, 3, 4, 0](26)
-Execute Time: 16 ms, 344 μs, and 8 hnsecs
+Optimal Path: [0, 3, 7, 5, 1, 4, 6, 2, 0](20)
+Execution Time: 15 ms, 455 μs, and 5 hnsecs
 ================
 Nearest Addtion
-Optimal Path: [0, 7, 5, 2, 6, 3, 4, 1, 0](32)
-Execute Time: 9 μs and 8 hnsecs
+Optimal Path: [0, 2, 6, 4, 5, 1, 7, 3, 0](22)
+Execution Time: 11 μs and 1 hnsec
 ================
 Greedy
-Optimal Path: [0, 7, 6, 3, 4, 1, 2, 5, 0](32)
-Execute Time: 23 μs and 7 hnsecs
+Optimal Path: [0, 2, 6, 7, 3, 5, 1, 4, 0](24)
+Execution Time: 17 μs and 3 hnsecs
 ================
 Nearest Neighbor
-Optimal Path: [0, 7, 6, 3, 4, 1, 2, 5, 0](32)
-Execute Time: 5 μs and 7 hnsecs
+Optimal Path: [0, 2, 6, 7, 3, 5, 1, 4, 0](24)
+Execution Time: 4 μs and 9 hnsecs
