@@ -223,16 +223,14 @@ public class PathList {
         arcs.sort!((a, b) => a.cost < b.cost);
 
         Path generateOptimalPath(Path prev_path, Arc[] unused_arcs) {
-            Path path = prev_path.dup;
-
             if (unused_arcs.empty) {
-                path.close;
-                return path;
+                prev_path.close;
+                return prev_path;
             }
 
-            int last_node = path.get.back;
+            int last_node = prev_path.get.back;
             Arc next_arc = unused_arcs.filter!(a => a.prev == last_node).front;
-            return generateOptimalPath(path.add(next_arc.next), unused_arcs.remove!(a => a.next == next_arc.next));
+            return generateOptimalPath(prev_path.add(next_arc.next), unused_arcs.remove!(a => a.next == next_arc.next || a.prev == next_arc.prev));
         }
 
         return generateOptimalPath(new Path(this.arc_info, this.start_point), arcs);
