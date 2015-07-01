@@ -94,7 +94,7 @@ public class PathList {
 
             // 未使用のnodeそれぞれについて枝を伸ばす
             return unused_nodes.map!(node => generatePathAll(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node)))
-                            .reduce!((a,b) => a ~ b);
+                .reduce!((a,b) => a ~ b);
         }
 
         this.path_list = generatePathAll(new Path(this.arc_info, this.start_point), unused_nodes.remove!(a => a == this.start_point));
@@ -164,12 +164,12 @@ public class PathList {
         }
 
         return unused_nodes.map!(node => byBruteForce(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node)))
-                        .reduce!((a,b) {
-                            if (a.cost < b.cost)
-                                return a;
-                            else
-                                return b;
-                        });
+            .reduce!((a,b) {
+                if (a.cost < b.cost)
+                    return a;
+                else
+                    return b;
+            });
     }
 
     /**
@@ -214,9 +214,9 @@ public class PathList {
         // 2. それらのArcとそのコストの組み合わせを生成
         // 3. 同一地点へのArc（0から0、1から1のようなArc）および0に向かうArcを（途中で始点に戻らないように）削除する
         int[] nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
-        Arc[] arcs = cartesianProduct(nodes, nodes).map!(a => Arc(a[0], a[1], arc_info[a[0]][a[1]]))                // Arcとそのコストを組み合わせを生成
-                                                   .filter!(a => a.prev != a.next && a.next != this.start_point)    // 邪魔なArcの削除
-                                                   .array;                                                          // 配列化
+        Arc[] arcs = cartesianProduct(nodes, nodes).map!(a => Arc(a[0], a[1], arc_info[a[0]][a[1]]))    // Arcとそのコストを組み合わせを生成
+            .filter!(a => a.prev != a.next && a.next != this.start_point)                               // 邪魔なArcの削除
+            .array;                                                                                     // 配列化
 
         // Arcの配列をコストについて昇順にソート
         arcs.sort!((a, b) => a.cost < b.cost);
