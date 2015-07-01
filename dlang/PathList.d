@@ -82,17 +82,17 @@ public class PathList {
      * すべてのpathを生成して、フィールドに格納する。
      */
     public void setPathAll() {
-        /* 未使用nodeの集合を生成する */
+        // 未使用nodeの集合を生成する
         int[] unused_nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
 
         Path[] generatePathAll(Path prev_path, int[] unused_nodes) {
-            /* 未使用のnodeがなくなったら終了 */
+            // 未使用のnodeがなくなったら終了
             if (unused_nodes.empty) {
                 prev_path.close; // pathの末尾に始点を追加して、コストを算出
                 return [prev_path];
             }
 
-            /* 未使用のnodeそれぞれについて枝を伸ばす */
+            // 未使用のnodeそれぞれについて枝を伸ばす
             return unused_nodes.map!(node => generatePathAll(prev_path.dup.add(node), unused_nodes.dup.remove!(a => a == node)))
                             .reduce!((a,b) => a ~ b);
         }
@@ -190,14 +190,12 @@ public class PathList {
         }
 
         // path に追加されている node (既存 node )とされていない node (新規 node )からコストが最小の組を一つ選出する。
-        int[] min_pair = null;
-        foreach (prev_node; prev_path.get) {
-            foreach (next_node; unused_nodes) {
-                if (min_pair is null || arc_info[prev_node][next_node] < arc_info[min_pair[0]][min_pair[1]]) {
-                    min_pair = [prev_node, next_node];
-                }
-            }
-        }
+        auto min_pair = cartesianProduct(prev_path.get, unused_nodes).reduce!((a, b) {
+            if (arc_info[a[0]][a[1]] < arc_info[b[0]][b[1]])
+                return a;
+            else
+                return b;
+        });
 
         // 既存nodeのインデックスを取得し、その後ろに新規nodeを挿入する。
         return byNearestAddition(prev_path.dup.insert(min_pair[0], min_pair[1]), unused_nodes.remove!(a => a == min_pair[1]));
@@ -208,20 +206,20 @@ public class PathList {
      * @return コストが最小のpath
      */
     private Path byGreedy() {
-        // Tuple([int int], int)の配列を生成
+        // Tuple([int int], int)型をArc型として定義
         alias Arc = Tuple!(int, "prev", int, "next", int, "cost");
-        Arc[] arcs = [];
 
         // 全てのArcとそのコストを組み合わせて、配列に格納
-        foreach (i; 0..this.arc_info.length) {
-            foreach (j; 0..this.arc_info.length) {
-                arcs ~= Arc(i.to!int, j.to!int, this.arc_info[i][j]);
-            }
-        }
+        // 1. 全てのArc（2つのnodeの組み合わせ）を生成
+        // 2. それらのArcとそのコストの組み合わせを生成
+        // 3. 同一地点へのArc（0から0、1から1のようなArc）および0に向かうArcを（途中で始点に戻らないように）削除する
+        int[] nodes = recurrence!((a,n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
+        Arc[] arcs = cartesianProduct(nodes, nodes).map!(a => Arc(a[0], a[1], arc_info[a[0]][a[1]]))                // Arcとそのコストを組み合わせを生成
+                                                   .filter!(a => a.prev != a.next && a.next != this.start_point)    // 邪魔なArcの削除
+                                                   .array;                                                          // 配列化
 
-        // arcの配列をコストについて昇順にソート
+        // Arcの配列をコストについて昇順にソート
         arcs.sort!((a, b) => a.cost < b.cost);
-        arcs = arcs.remove!(a => a.prev == a.next || a.next == this.start_point);
 
         Path generateOptimalPath(Path prev_path, Arc[] unused_arcs) {
             Path path = prev_path.dup;
