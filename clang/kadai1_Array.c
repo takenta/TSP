@@ -14,32 +14,35 @@ typedef struct ROUTE{
 
 FILE *func_InputFile(char *);
 CITY func_makeDistanceMatrix(FILE *);
-ROUTE *func_makeAllOfRoute(ROUTE,CITY,int *,ROUTE *,int);
+ROUTE *func_makeAllOfRoute(ROUTE,CITY,int *,ROUTE *,int,int *);
 ROUTE func_makeARoute(ROUTE,CITY,int[]);
 ROUTE func_ROUTECopy(ROUTE,int);
 ROUTE func_getMinimumFromArray(ROUTE *,int);
+void func_printROUTE(ROUTE route);
 int *func_intArrayCopy(int *,int);
 int func_fact(int);
 int func_addROUTEtoArray(ROUTE,ROUTE *,int);
 
-int main(void){
+int main(int argc,char *argv[]){
   FILE *fpin;
   char graph_Name[20];
   CITY city;
   ROUTE *route_array;
+  ROUTE *route_List;
   ROUTE route;
   ROUTE minimum;
   int route_array_Length;
   int *unusedNode;
   int i,j;
   int n = 0;
+  int current=0;
   /*---------------------------------------------------
     ファイルインプット
-   ---------------------------------------------------*/  
-  printf("グラフのファイル名を入力してください.\nファイル名 = ");
-  scanf("%s",graph_Name);
-  fpin = func_InputFile(graph_Name);
-   
+   ---------------------------------------------------*/
+  //printf("グラフのファイル名を入力してください.\nファイル名 = ");
+  //scanf("%s",graph_Name);
+  fpin = func_InputFile(argv[1]);
+
   /*------------------------------------
     都市距離行列の生成
   --------------------------------------*/
@@ -51,7 +54,7 @@ int main(void){
     printf("\n");
   }
   printf("都市数 = %d\n",city.numCity);
-  
+
   /*------------------------------------------
     全経路の算出
    ------------------------------------------*/
@@ -62,14 +65,17 @@ int main(void){
   route.length = 0;
   route.cost = 0;
   route.path = (int *)calloc(city.numCity,sizeof(int));
+
   for(i=0;i<city.numCity;i++)
     route.path[i] = 0;
   route_array = (ROUTE *)malloc(sizeof(ROUTE) * route_array_Length);
-  func_makeAllOfRoute(route,city,unusedNode,route_array,route_array_Length);
-  
+  route_List = func_makeAllOfRoute(route,city,unusedNode,route_array,route_array_Length,&current);
+
   /*----------------------------------------
     全経路から最小コスト経路の算出
     -----------------------------------------*/
+  //for(i=0;i<route_array_Length;i++)
+  //func_printROUTE(route_array[i]);
   minimum = func_getMinimumFromArray(route_array,route_array_Length);
 
   /*-----------------------------------------
@@ -79,7 +85,7 @@ int main(void){
   func_printROUTE(minimum);
   printf("\n");
 
-  
+
   free(route_array);
   free(unusedNode);
   free(route.path);
@@ -107,7 +113,7 @@ CITY func_makeDistanceMatrix(FILE *fp){
     if(c == '\n'){
       city.numCity = i;
       break;
-    }    
+    }
   }
   /*都市行列*/
   city.distanceMatrix = (int **)malloc(sizeof(int *)*city.numCity);
@@ -120,9 +126,9 @@ CITY func_makeDistanceMatrix(FILE *fp){
     city.distanceMatrix[i][j]=val;
     i++;
     if(c == 10){
-      j++;      
+      j++;
       i=0;
-    }    
+    }
   }
   return city;
 }
@@ -136,36 +142,46 @@ int func_fact(int val){
 
 
 
-ROUTE *func_makeAllOfRoute(ROUTE route,CITY city,int *unusedNode,ROUTE *route_List,int route_List_Length){
+ROUTE *func_makeAllOfRoute(ROUTE route,CITY city,int *unusedNode,ROUTE *route_List,int route_List_Length,int *current){
   int i;
   int temp;
-  if(route.length == city.numCity){
-      func_addROUTEtoArray(route,route_List,route_List_Length);
-      func_printROUTE(route);
-  }else{
-    for(i=0;i<city.numCity;i++){
-      if(unusedNode[i]){
-	unusedNode[i] = 0;
-	route.cost += city.distanceMatrix[route.path[route.length]][i];      
-	route.path[route.length] = i;
-	route.length++;
-	temp = route.cost;
-	func_makeAllOfRoute(route,city,unusedNode,route_List,route_List_Length);
-	unusedNode[i] = 1;
-	route.length--;
-	route.cost = temp;
-	
-      }    
+  if(*current < route_List_Length ){
+    if(route.length == city.numCity){
+      //func_addROUTEtoArray(route,route_List,route_List_Length,current);
+      //printf("current = %d\n",*current);
+      route.cost += city.distanceMatrix[route.path[route.length-1]][0];
+      route_List[*current] = route;
+      route_List[*current].path = func_intArrayCopy(route.path,city.numCity);
+      //func_printROUTE(route);
+      *(current) = *(current) + 1;
+    }else{
+      for(i=0;i<city.numCity;i++){
+	if(unusedNode[i]){
+	  unusedNode[i] = 0;
+	  temp = route.cost;
+	  route.cost += city.distanceMatrix[route.path[route.length-1]][i];
+	  route.path[route.length] = i;
+	  route.length++;
+	  func_makeAllOfRoute(route,city,unusedNode,route_List,route_List_Length,current);
+	  route.length--;
+	  unusedNode[i] = 1;
+	  route.cost = temp;
+	}
+      }
     }
+  }else{
+    return route_List;
   }
-
 }
 ROUTE func_getMinimumFromArray(ROUTE *array,int length){
   int i;
   ROUTE min = array[0];
   for(i=0;i<length;i++){
-      if(array[i].cost < min.cost)
-	min = array[i];
+    if(array[i].cost < min.cost){
+      //printf("minimum replaced");
+      min = array[i];
+    }
+
   }
   return min;
 }
@@ -188,7 +204,7 @@ int func_addROUTEtoArray(ROUTE route,ROUTE *array,int length){
 void func_printROUTE(ROUTE route){
   int i;
   for(i=0;i<route.length;i++){
-    printf("%d->",route.path[i]);    
+    printf("%d->",route.path[i]);
   }
   printf("    cost = %d",route.cost);
   printf("\n");
@@ -203,7 +219,7 @@ ROUTE func_ROUTECopy(ROUTE route,int pathlength){
   temp.path = (int *)malloc(sizeof(int)*pathlength);
   for(i=0;i<pathlength;i++)
     temp.path[i] = route.path[i];
-  return temp;  
+  return temp;
 }
 
 int *func_intArrayCopy(int *array,int length){
