@@ -4,6 +4,8 @@ clang/*.exe
 clang/*~
 dlang/*.exe
 dlang/*.obj
+dlang/*.log
+dlang/*.def
 rust/src/tmp*
 rust/target
 rust/release
