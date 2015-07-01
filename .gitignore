@@ -1,7 +1,9 @@
 *.sublime-project
 *.sublime-workspace
+clang/*.exe
+clang/*~
+dlang/*.exe
 dlang/*.obj
 rust/src/tmp*
 rust/target
 rust/release
-dlang/*.exe
