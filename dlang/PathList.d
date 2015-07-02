@@ -118,18 +118,18 @@ public class PathList {
                 break;
             case "BF":
                 int[] unused_nodes = recurrence!((a, n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
-                this.optimal_path = this.byBruteForce(new Path(this.arc_info, this.start_point), unused_nodes);
+                this.optimal_path = this.byBruteForce(new Path(this.arc_info, this.start_point), unused_nodes.remove!(a => a == this.start_point));
                 break;
             case "NA":
                 int[] unused_nodes = recurrence!((a, n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
-                this.optimal_path = this.byNearestAddition(new Path(this.arc_info, this.start_point), unused_nodes);
+                this.optimal_path = this.byNearestAddition(new Path(this.arc_info, this.start_point), unused_nodes.remove!(a => a == this.start_point));
                 break;
             case "Gr":
                 this.optimal_path = this.byGreedy();
                 break;
             case "NN":
                 int[] unused_nodes = recurrence!((a, n) => a[n-1] + 1)(0).take(this.arc_info.length).array;
-                this.optimal_path = this.byNearestNeighbor(new Path(this.arc_info, this.start_point), unused_nodes);
+                this.optimal_path = this.byNearestNeighbor(new Path(this.arc_info, this.start_point), unused_nodes.remove!(a => a == this.start_point));
                 break;
             default:
                 writeln("The command don't exists.");
@@ -230,7 +230,7 @@ public class PathList {
 
             int last_node = prev_path.get.back;
             Arc next_arc = unused_arcs.filter!(a => a.prev == last_node).front;
-            return generateOptimalPath(prev_path.add(next_arc.next), unused_arcs.remove!(a => a.next == next_arc.next || a.prev == next_arc.prev));
+            return generateOptimalPath(prev_path.add(next_arc.next), unused_arcs.remove!(a => a == next_arc || (a.prev == next_arc.next && a.next == next_arc.prev) || a.next == next_arc.next || a.prev == next_arc.prev));
         }
 
         return generateOptimalPath(new Path(this.arc_info, this.start_point), arcs);
