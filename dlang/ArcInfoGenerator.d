@@ -21,10 +21,10 @@ void main(string[] args) {
             /* 最大値は10未満 */
             /* さらに既に設定されている数値について、三角不等式を満たす */
             auto limit = 10L;
-            foreach (k; 0..i.to!uint) {
-                auto cost = arc_info[i][k] + arc_info[k][j];
-                if (cost < limit) limit = cost;
-            }
+            //foreach (k; 0..i.to!uint) {
+            //    auto cost = arc_info[i][k] + arc_info[k][j];
+            //    if (cost < limit) limit = cost;
+            //}
 
             arc_info[i][j] = uniform(1, limit, seed);
             arc_info[j][i] = arc_info[i][j];

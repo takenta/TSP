@@ -6,20 +6,20 @@
 ================
 All Enumerate
 Optimal Path: [0, 2, 4, 3, 1, 0](18)
-Execution Time: 174 μs and 3 hnsecs
+Execution Time: 69 μs
 ================
 Brute Force
-Optimal Path: [0, 2, 4, 3, 1, 0](18)
-Execution Time: 155 μs
+Optimal Path: [0, 2, 4, 3, 1, 0, 0](18)
+Execution Time: 329 μs
 ================
 Nearest Addtion
-Optimal Path: [0, 1, 2, 3, 4, 0](23)
-Execution Time: 12 μs and 7 hnsecs
+Optimal Path: [0, 1, 2, 3, 4, 0, 0](23)
+Execution Time: 7 μs
 ================
 Greedy
 Optimal Path: [0, 1, 2, 4, 3, 0](21)
-Execution Time: 17 μs and 7 hnsecs
+Execution Time: 6 μs
 ================
 Nearest Neighbor
-Optimal Path: [0, 2, 4, 3, 1, 0](18)
-Execution Time: 7 μs and 5 hnsecs
+Optimal Path: [0, 0, 2, 4, 3, 1, 0](18)
+Execution Time: 3 μs and 7 hnsecs
